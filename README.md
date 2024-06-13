@@ -1,3 +1,2 @@
-<<<<<<< HEAD
 # SoftwareEngineerSalaryPedection
->>>>>>> origin/main
+
