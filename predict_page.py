@@ -18,10 +18,14 @@ def clean_education_input(x):
     if "Bachelor’s degree" in x:
         return "Bachelor’s degree"
     if "Master’s degree" in x:
-        return "Master’s degree"  # Ensure this matches your cleaned labels
+        return "Master’s degree"
     if "Post grad" in x:
         return "Post grad"
     return "Less than a Bachelors"
+
+# Function to convert salary from USD to INR
+def convert_to_inr(usd_salary, exchange_rate=82.50):  # Example exchange rate: 1 USD = 82.50 INR
+    return usd_salary * exchange_rate
 
 def show_predic_page():
     st.title("Software Engineer Salary Prediction")
@@ -30,28 +34,28 @@ def show_predic_page():
     countries = (
         "United States of America",
         "Germany",
-        "United Kingdom of Great Britain and Northern Ireland",  
+        "United Kingdom of Great Britain and Northern Ireland",
         "Canada",
-        "India",                                                    
-        "France",                                                   
-        "Netherlands",                                              
-        "Australia",                                                
-        "Brazil",                                                   
-        "Spain",                                                    
-        "Poland",                                                   
-        "Sweden",                                                    
-        "Italy",                                                     
-        "Switzerland",                                               
-        "Denmark",                                                   
-        "Norway",                                                    
-        "Austria",                                                   
-        "Israel",                                                    
-        "Portugal",                                                  
-        "Czech Republic",                                           
+        "India",
+        "France",
+        "Netherlands",
+        "Australia",
+        "Brazil",
+        "Spain",
+        "Poland",
+        "Sweden",
+        "Italy",
+        "Switzerland",
+        "Denmark",
+        "Norway",
+        "Austria",
+        "Israel",
+        "Portugal",
+        "Czech Republic",
         "Belgium",
         "Finland",
     )
-    
+
     education_levels = (
         "Less than a Bachelors",
         "Bachelor’s degree",
@@ -96,7 +100,7 @@ def show_predic_page():
     country = st.selectbox("Country", countries)
     education = st.selectbox("Education Level", education_levels)
     job_role = st.selectbox("Job Role", job_roles)
-    experience = st.slider("Years of experience", 0, 50, 3)
+    experience = st.slider("Years of experience", 0, 50, 4)
     
     ok = st.button("Calculate Salary")
     if ok:
@@ -106,9 +110,15 @@ def show_predic_page():
         X = np.array([[country, cleaned_education, experience, job_role]])
         X[:, 0] = le_country.transform(X[:,0])
         X[:, 1] = le_education.transform(X[:,1])
-        X[:, 3] = le_devtype.transform(X[:, 3])
+        X[:, 3] = le_devtype.transform(X[:,3])
         X = X.astype(float)
 
-        salary = regressor.predict(X)
-        st.subheader(f"The estimated salary is ${salary[0]:.2f}")
+        salary_usd = regressor.predict(X)[0]
+        salary_inr = convert_to_inr(salary_usd)
+        
+        st.subheader("Estimated Salary")
+        st.write(f"**USD:** <span style='color:green'> ${salary_usd:.2f}</span>", unsafe_allow_html=True)
+        st.write(f"**INR:** <span style='color:green'> ₹{salary_inr:.2f}</span>", unsafe_allow_html=True)
 
+if __name__ == '__main__':
+    show_predic_page()
